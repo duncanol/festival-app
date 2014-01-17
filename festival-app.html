@@ -1,0 +1,25 @@
+<head>
+  <title>festival-app</title>
+</head>
+
+<body>
+  {{> intro}}
+  
+  {{> chathistory}}
+</body>
+
+<template name="intro">
+  <ul>
+    <li>Add a textfield to enter text.  Hit enter and it will pop up on the page in a persistent lis and appear automatically to any other clients</li>
+  </ul>
+</template>
+
+
+<template name="chathistory">
+Messages here:
+  <ul>
+  {{#each messages}}
+    <li>{{ text }}</li>
+  {{/each}}
+  </ul>
+</template>
