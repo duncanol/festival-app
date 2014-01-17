@@ -1,1 +1,5 @@
 /* CSS declarations go here */
+li:nth-of-type(even)
+{
+color: red;
+}

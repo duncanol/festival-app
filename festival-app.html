@@ -24,7 +24,7 @@
 Messages here:
   <ul>
   {{#each messages}}
-    <li class="chat-message" data-entry-id="{{_id}}">
+    <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
       {{ text }} <small>({{ username }})</small>
        
       {{#if deletingEntry _id}}
