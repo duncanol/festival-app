@@ -3,6 +3,11 @@
 </head>
 
 <body>
+
+  <div style="float: right; margin-right:20px;">
+    {{loginButtons align="right"}}
+  </div>
+  
   {{> intro}}
   
   {{> chathistory}}
@@ -19,7 +24,7 @@
 Messages here:
   <ul>
   {{#each messages}}
-    <li>{{ text }}</li>
+    <li>{{ text }} <small>({{ username }})</small></li>
   {{/each}}
   </ul>
   
