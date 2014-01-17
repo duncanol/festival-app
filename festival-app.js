@@ -39,6 +39,21 @@ if (Meteor.isClient) {
              document.getElementById('chat-text').value = "";
         }
     });
+    
+    Template.chathistory.deletingEntry = function(entryId) {
+        return Session.equals('deletingEntryId', entryId);
+    }
+    
+    Template.chathistory.events({
+        'click .chat-message': function(e) {
+            var id = e.target.getAttribute("data-entry-id");
+            Session.set('deletingEntryId', id);
+        },
+        'click #delete-entry': function(e) {
+            var id = e.target.getAttribute("data-entry-id");
+            chathistory.remove({_id: id});
+        }
+    });
   
 }
 

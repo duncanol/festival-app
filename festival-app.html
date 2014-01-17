@@ -24,7 +24,13 @@
 Messages here:
   <ul>
   {{#each messages}}
-    <li>{{ text }} <small>({{ username }})</small></li>
+    <li class="chat-message" data-entry-id="{{_id}}">
+      {{ text }} <small>({{ username }})</small>
+       
+      {{#if deletingEntry _id}}
+        <a href="#" id="delete-entry" data-entry-id="{{_id}}">Delete</a>
+      {{/if}}
+    </li>
   {{/each}}
   </ul>
   
