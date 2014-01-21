@@ -39,6 +39,16 @@ chathistory.allow({
     } 
 });
 
+CalendarFunctions = {
+    formatTime: function(date) {
+       return date.toTimeString().substring(0, 5);
+    },
+    formatDate: function(date) {
+        return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + 
+        date.getHours() + ":" + (date.getMinutes() < 10 ? "0" : "") + "" + date.getMinutes();
+    }
+};
+
 if (Meteor.isClient) {
 
     getUserName = function(userId) {
@@ -50,17 +60,14 @@ if (Meteor.isClient) {
     });
     
     Template.chathistory.messages = function() {
-        var chatItems = chathistory.find({}).fetch();
         
-        for (var i = 0; i < chatItems.length; i++) {
-            if (chatItems[i].author != null) {
-                chatItems[i].username = getUserName(chatItems[i].author);
-            } else {
-                chatItems[i].username = 'anon';
-            }
-        }
-        
-        return chatItems;
+        var transformChat = function(doc) {
+            doc.username = getUserName(doc.author);
+            doc.formattedDate = CalendarFunctions.formatDate(doc.date);
+            return doc;
+        };
+            
+        return chathistory.find({}, {limit: 10, sort: {"date": "desc"}, transform: transformChat}).fetch();
     };
     
     Template.chathistory.events({
@@ -70,7 +77,8 @@ if (Meteor.isClient) {
             if (e.which === 13 && text.length > 0) {
                 chathistory.insert({
                     text: text,
-                    author: Meteor.userId()
+                    author: Meteor.userId(),
+                    date: new Date()
                 });
                 e.target.value = "";
             }

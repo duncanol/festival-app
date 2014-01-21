@@ -25,7 +25,7 @@ Messages here:
   <ul>
   {{#each messages}}
     <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
-      {{ text }} <small class="chat-message">({{ username }})</small>
+      {{ text }} <small class="chat-message">({{ username }} - posted {{formattedDate}})</small>
       
       {{#if permittedToRemoveChat _id}} 
         {{#if deletingEntry ../_id}}
