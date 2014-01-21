@@ -1,10 +1,49 @@
-chathistory = new Meteor.Collection("chat")
+chathistory = new Meteor.Collection("chat");
+
+adminUser = function(userId) {
+    var adminUser = Meteor.users.findOne({
+        username : "admin"
+    });
+    return (userId && adminUser && userId === adminUser._id);
+};
+
+adminUserLoggedIn = function() {
+    return adminUser(Meteor.userId());
+};
+
+userLoggedIn = function() {
+    return Meteor.userId() != null;
+};
+
+permittedToInsertChat = function(doc) {
+    return userLoggedIn();
+};
+
+permittedToUpdateChat = function(doc) {
+    return false;
+};
+
+permittedToRemoveChat = function(doc) {
+    return adminUserLoggedIn();
+};
+
+chathistory.allow({
+    insert: function (userId, doc) {
+        return permittedToInsertChat(doc);
+    },
+    update: function (userId, doc, fields, modifier) {
+        return permittedToUpdateChat(doc);
+    },
+    remove: function (userId, doc, fields, modifier) {
+        return permittedToRemoveChat(doc);
+    } 
+});
 
 if (Meteor.isClient) {
 
     getUserName = function(userId) {
         return Meteor.users.findOne({_id: userId}).username;
-    }
+    };
     
     Accounts.ui.config({
         passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
@@ -22,7 +61,7 @@ if (Meteor.isClient) {
         }
         
         return chatItems;
-    }
+    };
     
     Template.chathistory.events({
         'keyup #chat-text': function(e) {
@@ -40,9 +79,21 @@ if (Meteor.isClient) {
         }
     });
     
+    Template.chathistory.permittedToInsertChat = function() {
+        return permittedToInsertChat();
+    };
+    
+    Template.chathistory.permittedToRemoveChat = function(id) {
+        return permittedToRemoveChat();
+    };
+    
+    Template.chathistory.permittedToUpdateChat = function(id) {
+        return permittedToUpdateChat();
+    };
+    
     Template.chathistory.deletingEntry = function(entryId) {
         return Session.equals('deletingEntryId', entryId);
-    }
+    };
     
     Template.chathistory.events({
         'click .chat-message': function(e) {

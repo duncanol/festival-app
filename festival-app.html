@@ -15,7 +15,7 @@
 
 <template name="intro">
   <ul>
-    <li>Add a textfield to enter text.  Hit enter and it will pop up on the page in a persistent lis and appear automatically to any other clients</li>
+    <li>Add a textfield to enter text.  Hit enter and it will pop up on the page in a persistent list and appear automatically to any other clients</li>
   </ul>
 </template>
 
@@ -25,17 +25,24 @@ Messages here:
   <ul>
   {{#each messages}}
     <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
-      {{ text }} <small>({{ username }})</small>
-       
-      {{#if deletingEntry _id}}
-        <a href="#" id="delete-entry" data-entry-id="{{_id}}">Delete</a>
+      {{ text }} <small class="chat-message">({{ username }})</small>
+      
+      {{#if permittedToRemoveChat _id}} 
+        {{#if deletingEntry ../_id}}
+          <a href="#" id="delete-entry" data-entry-id="{{../_id}}">Delete</a>
+        {{/if}}
       {{/if}}
     </li>
   {{/each}}
   </ul>
   
-  Textfield here:
-  <input type="text" id="chat-text" placeholder="Hit enter to save" />
+  {{#if permittedToInsertChat }}
+    <input type="text" id="chat-text" placeholder="Hit enter to save" />
+  {{/if}}
+  
+  {{#unless permittedToInsertChat }}
+    <p>Please log in (top RHS) to start chatting!</p>
+  {{/unless}}
   
   
 </template>
