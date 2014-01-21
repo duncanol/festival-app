@@ -65,8 +65,9 @@ if (Meteor.isClient) {
     
     Template.chathistory.events({
         'keyup #chat-text': function(e) {
-            if (e.which === 13) {
-                var text = e.target.value;
+            var text = e.target.value;
+
+            if (e.which === 13 && text.length > 0) {
                 chathistory.insert({
                     text: text,
                     author: Meteor.userId()
