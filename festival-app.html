@@ -13,29 +13,16 @@
   {{> intro}}
   
   {{> chathistory}}
+  
+  {{> chatstats}}
 </body>
 
 <template name="intro">
-  <ul>
-    <li>Add a textfield to enter text.  Hit enter and it will pop up on the page in a persistent list and appear automatically to any other clients</li>
-  </ul>
+  <h2>How are you doing?  Let the world know...</h2>
 </template>
 
 
 <template name="chathistory">
-  <ul>
-  {{#each messages}}
-    <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
-      {{ text }} <small class="chat-message">({{ username }} felt {{tagByCategory 'emotion'}} at {{formattedDate}})</small>
-      
-      {{#if permittedToRemoveChat _id}} 
-        {{#if deletingEntry ../_id}}
-          <a href="#" id="delete-entry" data-entry-id="{{../_id}}">Delete</a>
-        {{/if}}
-      {{/if}}
-    </li>
-  {{/each}}
-  </ul>
   
   {{#if permittedToInsertChat }}
     <input type="text" id="chat-text" placeholder="How ya doing?" />
@@ -48,5 +35,33 @@
     <p>Please log in (top RHS) to start chatting!</p>
   {{/unless}}
   
+  <h3>People are in general feeling...</h3>
+  <ul>
+    {{#each messages}}
+      <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
+        {{ text }} <small class="chat-message">({{ authorUsername }} felt <i>{{tagByCategory 'emotion'}}</i> at {{formattedDate}})</small>
+        
+        {{#if permittedToRemoveChat _id}} 
+          {{#if deletingEntry ../_id}}
+            <a href="#" id="delete-entry" data-entry-id="{{../_id}}">Delete</a>
+          {{/if}}
+        {{/if}}
+      </li>
+    {{/each}}
+  </ul>
   
 </template>
+
+<template name="chatstats">
+
+  <h4>Emotional tilt</h4>
+  {{#each tags}}
+    
+    <div class="stat-count">
+      {{tag}} : {{count}}
+    </div>
+    
+  {{/each}}  
+  
+</template>
+

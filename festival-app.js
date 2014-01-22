@@ -44,7 +44,7 @@ CalendarFunctions = {
        return date.toTimeString().substring(0, 5);
     },
     formatDate: function(date) {
-        return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + 
+        return date.getDate() + "/" + (date.getMonth() < 9 ? "0" : "") + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + 
         date.getHours() + ":" + (date.getMinutes() < 10 ? "0" : "") + "" + date.getMinutes();
     }
 };
@@ -80,7 +80,6 @@ if (Meteor.isClient) {
     };
     
     var transformChat = function(doc) {
-        doc.username = getUserName(doc.author);
         doc.formattedDate = CalendarFunctions.formatDate(doc.date);
         doc.tagByCategory = tagByCategory;
         return doc;
@@ -92,18 +91,20 @@ if (Meteor.isClient) {
     
     Template.chathistory.events({
         'click .chat-text-submit': function(e) {
-            var text = document.getElementById('chat-text').value;
+            var textfield = document.getElementById('chat-text');
+            var text = textfield.value;
             var tag = e.target.getAttribute('data-tag');
             var category = e.target.getAttribute('data-category');
 
             if (text.length > 0) {
                 chathistory.insert({
                     text: text,
-                    author: Meteor.userId(),
+                    authorId: Meteor.userId(),
+                    authorUsername: Meteor.user().username,
                     date: new Date(),
                     tags: [{tag: tag, category: category}]
                 });
-                e.target.value = "";
+                textfield.value = "";
             }
         }
     });
@@ -135,6 +136,35 @@ if (Meteor.isClient) {
         }
     });
   
+    Template.chatstats.tags = function() {
+        // TODO replace with group aggregation function e.g. 
+        //db.records.group( {
+        //    key: { a: 1 },
+        //    cond: { a: { $lt: 3 } },
+        //    reduce: function(cur, result) { result.count += cur.count },
+        //   initial: { count: 0 }
+        // } )
+        var messages = chathistory.find({}).fetch();
+        var tagCounts = {};
+        
+        for (var i = 0; i < messages.length; i++) {
+            var messageTags = messages[i].tags;
+            for (var j = 0; j < messageTags.length; j++) {
+                var tag = messageTags[j].tag;
+                if (tagCounts[tag] == undefined) {
+                    tagCounts[tag] = {tag: tag, count: 1};
+                } else {
+                    tagCounts[tag] = {tag: tag, count: tagCounts[tag].count + 1};
+                }
+            }
+        }
+        
+        var numericArray = new Array();
+        for (var items in tagCounts){
+            numericArray.push(tagCounts[items]);
+        }
+        return numericArray;
+    };
 }
 
 if (Meteor.isServer) {
