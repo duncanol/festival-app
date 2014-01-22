@@ -1,5 +1,5 @@
 <head>
-  <title>festival-app</title>
+  <title>HappySadBored</title>
 </head>
 
 <body>
@@ -7,6 +7,8 @@
   <div style="float: right; margin-right:20px;">
     {{loginButtons align="right"}}
   </div>
+  
+  <h1>Happy<i>Sad</i><small>Bored</small></h1>
   
   {{> intro}}
   
@@ -21,11 +23,10 @@
 
 
 <template name="chathistory">
-Messages here:
   <ul>
   {{#each messages}}
     <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
-      {{ text }} <small class="chat-message">({{ username }} - posted {{formattedDate}})</small>
+      {{ text }} <small class="chat-message">({{ username }} felt {{tagByCategory 'emotion'}} at {{formattedDate}})</small>
       
       {{#if permittedToRemoveChat _id}} 
         {{#if deletingEntry ../_id}}
@@ -37,7 +38,10 @@ Messages here:
   </ul>
   
   {{#if permittedToInsertChat }}
-    <input type="text" id="chat-text" placeholder="Hit enter to save" />
+    <input type="text" id="chat-text" placeholder="How ya doing?" />
+    <button class="chat-text-submit" data-tag="happy" data-category="emotion">Happy :)</button>
+    <button class="chat-text-submit" data-tag="sad" data-category="emotion">Sad :(</button>
+    <button class="chat-text-submit" data-tag="bored" data-category="emotion">Bored :|</button>
   {{/if}}
   
   {{#unless permittedToInsertChat }}

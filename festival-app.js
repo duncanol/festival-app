@@ -52,39 +52,59 @@ CalendarFunctions = {
 if (Meteor.isClient) {
 
     getUserName = function(userId) {
-        return Meteor.users.findOne({_id: userId}).username;
+        var user = Meteor.users.findOne({_id: userId});
+        
+        if (user != null) {
+            return user.username;
+        }
+        return "anon";
     };
     
     Accounts.ui.config({
         passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
     });
     
-    Template.chathistory.messages = function() {
+    var tagByCategory = function(category) {
+        var tags = this.tags;
         
-        var transformChat = function(doc) {
-            doc.username = getUserName(doc.author);
-            doc.formattedDate = CalendarFunctions.formatDate(doc.date);
-            return doc;
-        };
-            
-        return chathistory.find({}, {limit: 10, sort: {"date": "desc"}, transform: transformChat}).fetch();
+        if (tags === undefined) {
+            return 'unknown'; 
+        }
+
+        for (var i = 0; i < tags.length; i++) {
+            if (tags[i].category == category) {
+                return tags[i].tag;
+            }
+        }
+        return null;
+    };
+    
+    var transformChat = function(doc) {
+        doc.username = getUserName(doc.author);
+        doc.formattedDate = CalendarFunctions.formatDate(doc.date);
+        doc.tagByCategory = tagByCategory;
+        return doc;
+    };
+    
+    Template.chathistory.messages = function() {
+        return chathistory.find({}, {limit: 10, sort: {"date": "desc"}, transform: transformChat});
     };
     
     Template.chathistory.events({
-        'keyup #chat-text': function(e) {
-            var text = e.target.value;
+        'click .chat-text-submit': function(e) {
+            var text = document.getElementById('chat-text').value;
+            var tag = e.target.getAttribute('data-tag');
+            var category = e.target.getAttribute('data-category');
 
-            if (e.which === 13 && text.length > 0) {
+            if (text.length > 0) {
                 chathistory.insert({
                     text: text,
                     author: Meteor.userId(),
-                    date: new Date()
+                    date: new Date(),
+                    tags: [{tag: tag, category: category}]
                 });
                 e.target.value = "";
             }
-        },
-        'focusout #chat-text': function(e) {
-             document.getElementById('chat-text').value = "";
         }
     });
     
