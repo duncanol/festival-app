@@ -10,19 +10,26 @@
   
   <h1>Happy<i>Sad</i><small>Bored</small></h1>
   
-  {{> intro}}
+  <h2>How are you doing?  Let the world know...</h2>
+  <div class="well span12" style="clear: right;">
+    {{> chatcontrol}}
+  </div>
   
-  {{> chathistory}}
+  <div style="clear: left;">
+    <h2>People are in general feeling...</h2>
+    {{> chathistory}}
+  </div>
   
-  {{> chatstats}}
+  <div style="clear: left;">
+    <h4>Emotional tilt</h4>
+    <div class="well span12" style="clear: right;">
+      {{> chatstats}}
+    </div>
+  </div>
+    
 </body>
 
-<template name="intro">
-  <h2>How are you doing?  Let the world know...</h2>
-</template>
-
-
-<template name="chathistory">
+<template name="chatcontrol">
   
   {{#if permittedToInsertChat }}
     <input type="text" id="chat-text" placeholder="How ya doing?" />
@@ -35,26 +42,33 @@
     <p>Please log in (top RHS) to start chatting!</p>
   {{/unless}}
   
-  <h3>People are in general feeling...</h3>
-  <ul>
-    {{#each messages}}
-      <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
-        {{ text }} <small class="chat-message">({{ authorUsername }} felt <i>{{tagByCategory 'emotion'}}</i> at {{formattedDate}})</small>
-        
-        {{#if permittedToRemoveChat _id}} 
-          {{#if deletingEntry ../_id}}
-            <a href="#" id="delete-entry" data-entry-id="{{../_id}}">Delete</a>
-          {{/if}}
-        {{/if}}
-      </li>
-    {{/each}}
-  </ul>
+</template>
+
+<template name="chathistory">
+  
+  {{#each mainTags}}
+    <div class="well span4">
+      <h3>{{tag}} folk</h3>
+      <ul>
+        {{#each messages tag}}
+          <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
+            {{ text }} <small class="chat-message">({{ authorUsername }} felt <i>{{tagByCategory 'emotion'}}</i> at {{formattedDate}})</small>
+            
+            {{#if permittedToRemoveChat _id}} 
+              {{#if deletingEntry ../_id}}
+                <a href="#" id="delete-entry" data-entry-id="{{../_id}}">Delete</a>
+              {{/if}}
+            {{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    </div>    
+  {{/each}}
   
 </template>
 
 <template name="chatstats">
 
-  <h4>Emotional tilt</h4>
   {{#each tags}}
     
     <div class="stat-count">

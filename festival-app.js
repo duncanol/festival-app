@@ -51,6 +51,38 @@ CalendarFunctions = {
 
 if (Meteor.isClient) {
 
+    var getTagCounts = function() {
+        
+        // TODO replace with group aggregation function e.g. 
+        //db.records.group( {
+        //    key: { a: 1 },
+        //    cond: { a: { $lt: 3 } },
+        //    reduce: function(cur, result) { result.count += cur.count },
+        //   initial: { count: 0 }
+        // } )
+        
+        var messages = chathistory.find({}).fetch();
+        var tagCounts = {};
+        
+        for (var i = 0; i < messages.length; i++) {
+            var messageTags = messages[i].tags;
+            for (var j = 0; j < messageTags.length; j++) {
+                var tag = messageTags[j].tag;
+                if (tagCounts[tag] == undefined) {
+                    tagCounts[tag] = {tag: tag, count: 1};
+                } else {
+                    tagCounts[tag] = {tag: tag, count: tagCounts[tag].count + 1};
+                }
+            }
+        }
+        
+        var numericArray = new Array();
+        for (var items in tagCounts){
+            numericArray.push(tagCounts[items]);
+        }
+        return numericArray;
+    };
+    
     getUserName = function(userId) {
         var user = Meteor.users.findOne({_id: userId});
         
@@ -79,17 +111,7 @@ if (Meteor.isClient) {
         return null;
     };
     
-    var transformChat = function(doc) {
-        doc.formattedDate = CalendarFunctions.formatDate(doc.date);
-        doc.tagByCategory = tagByCategory;
-        return doc;
-    };
-    
-    Template.chathistory.messages = function() {
-        return chathistory.find({}, {limit: 10, sort: {"date": "desc"}, transform: transformChat});
-    };
-    
-    Template.chathistory.events({
+    Template.chatcontrol.events({
         'click .chat-text-submit': function(e) {
             var textfield = document.getElementById('chat-text');
             var text = textfield.value;
@@ -109,8 +131,21 @@ if (Meteor.isClient) {
         }
     });
     
-    Template.chathistory.permittedToInsertChat = function() {
+    Template.chatcontrol.permittedToInsertChat = function() {
         return permittedToInsertChat();
+    };
+    
+    
+    var transformChat = function(doc) {
+        doc.formattedDate = CalendarFunctions.formatDate(doc.date);
+        doc.tagByCategory = tagByCategory;
+        return doc;
+    };
+
+    Template.chathistory.mainTags = [{tag: 'happy'}, {tag: 'sad'}, {tag: 'bored'}];
+    
+    Template.chathistory.messages = function(tag) {
+        return chathistory.find({"tags.tag": tag}, {limit: 10, sort: {"date": "desc"}, transform: transformChat});
     };
     
     Template.chathistory.permittedToRemoveChat = function(id) {
@@ -137,33 +172,7 @@ if (Meteor.isClient) {
     });
   
     Template.chatstats.tags = function() {
-        // TODO replace with group aggregation function e.g. 
-        //db.records.group( {
-        //    key: { a: 1 },
-        //    cond: { a: { $lt: 3 } },
-        //    reduce: function(cur, result) { result.count += cur.count },
-        //   initial: { count: 0 }
-        // } )
-        var messages = chathistory.find({}).fetch();
-        var tagCounts = {};
-        
-        for (var i = 0; i < messages.length; i++) {
-            var messageTags = messages[i].tags;
-            for (var j = 0; j < messageTags.length; j++) {
-                var tag = messageTags[j].tag;
-                if (tagCounts[tag] == undefined) {
-                    tagCounts[tag] = {tag: tag, count: 1};
-                } else {
-                    tagCounts[tag] = {tag: tag, count: tagCounts[tag].count + 1};
-                }
-            }
-        }
-        
-        var numericArray = new Array();
-        for (var items in tagCounts){
-            numericArray.push(tagCounts[items]);
-        }
-        return numericArray;
+        return getTagCounts();
     };
 }
 
