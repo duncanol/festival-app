@@ -10,24 +10,37 @@
   
   <h1>Happy<i>Sad</i><small>Bored</small></h1>
   
-  <h2>How are you doing?  Let the world know...</h2>
+  <div class="info span12">
+    <p class="alert alert-success">
+      {{> topchat}}
+    </p>
+  </div>
+  
   <div class="well span12" style="clear: right;">
     {{> chatcontrol}}
   </div>
   
   <div style="clear: left;">
-    <h2>People are in general feeling...</h2>
     {{> chathistory}}
   </div>
   
   <div style="clear: left;">
-    <h4>Emotional tilt</h4>
+    <h4>Emotional leaderboard</h4>
     <div class="well span12" style="clear: right;">
       {{> chatstats}}
     </div>
   </div>
     
 </body>
+
+
+<template name="topchat">
+  
+  {{#with topTag}}
+    The <strong>{{tag}} folk</strong> have it today!
+  {{/with}}
+  
+</template>
 
 <template name="chatcontrol">
   
@@ -48,11 +61,11 @@
   
   {{#each mainTags}}
     <div class="well span4">
-      <h3>{{tag}} folk</h3>
+      <h3>{{messagesCount tag}} {{tag}} folk</h3>
       <ul>
         {{#each messages tag}}
           <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
-            {{ text }} <small class="chat-message">({{ authorUsername }} felt <i>{{tagByCategory 'emotion'}}</i> at {{formattedDate}})</small>
+            {{ text }} <small class="chat-message">({{ authorUsername }} {{formattedDate}})</small>
             
             {{#if permittedToRemoveChat _id}} 
               {{#if deletingEntry ../_id}}
@@ -69,13 +82,18 @@
 
 <template name="chatstats">
 
-  {{#each tags}}
-    
-    <div class="stat-count">
-      {{tag}} : {{count}}
-    </div>
-    
-  {{/each}}  
+  {{#with topTag}}
+    <div class="success">The <strong>{{tag}} folk</strong> have it today!</div>
+  {{/with}}
+  
+  <ul>
+    {{#each tags}}
+      <li class="stat-count">
+        {{tag}} : {{count}}
+        <span class="divider">/</span>
+      </li>
+    {{/each}}  
+  </ul>
   
 </template>
 

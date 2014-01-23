@@ -1,5 +1,5 @@
 /* CSS declarations go here */
-li:nth-of-type(even)
+li.chat-message:nth-of-type(odd)
 {
-color: red;
+	background-color: #DDD;
 }

@@ -45,7 +45,7 @@ CalendarFunctions = {
     },
     formatDate: function(date) {
         return date.getDate() + "/" + (date.getMonth() < 9 ? "0" : "") + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + 
-        date.getHours() + ":" + (date.getMinutes() < 10 ? "0" : "") + "" + date.getMinutes();
+        (date.getHours() < 10 ? "0" : "") + date.getHours() + ":" + (date.getMinutes() < 10 ? "0" : "") + "" + date.getMinutes();
     }
 };
 
@@ -80,6 +80,12 @@ if (Meteor.isClient) {
         for (var items in tagCounts){
             numericArray.push(tagCounts[items]);
         }
+        
+        numericArray.sort(function(tag1, tag2) {
+            return tag2.count - tag1.count;
+        });
+        
+        Session.set('topTag', numericArray[0]);
         return numericArray;
     };
     
@@ -147,7 +153,11 @@ if (Meteor.isClient) {
     Template.chathistory.messages = function(tag) {
         return chathistory.find({"tags.tag": tag}, {limit: 10, sort: {"date": "desc"}, transform: transformChat});
     };
-    
+
+    Template.chathistory.messagesCount = function(tag) {
+        return chathistory.find({"tags.tag": tag}).count();
+    };
+
     Template.chathistory.permittedToRemoveChat = function(id) {
         return permittedToRemoveChat();
     };
@@ -173,6 +183,10 @@ if (Meteor.isClient) {
   
     Template.chatstats.tags = function() {
         return getTagCounts();
+    };
+    
+    Template.topchat.topTag = function() {
+        return Session.get('topTag');
     };
 }
 
