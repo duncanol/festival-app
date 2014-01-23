@@ -86,14 +86,10 @@
     <div class="success">The <strong>{{tag}} folk</strong> have it today!</div>
   {{/with}}
   
-  <ul>
-    {{#each tags}}
-      <li class="stat-count">
-        {{tag}} : {{count}}
-        <span class="divider">/</span>
-      </li>
-    {{/each}}  
-  </ul>
+  {{#each tags}}
+    {{tag}}: {{count}}
+    <span class="divider">//</span>
+  {{/each}}  
   
 </template>
 

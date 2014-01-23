@@ -39,13 +39,17 @@ chathistory.allow({
     } 
 });
 
+var pad2 = function(number) {
+    return (number < 10 ? "0" : "") + number;
+};
+
 CalendarFunctions = {
     formatTime: function(date) {
        return date.toTimeString().substring(0, 5);
     },
+    
     formatDate: function(date) {
-        return date.getDate() + "/" + (date.getMonth() < 9 ? "0" : "") + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + 
-        (date.getHours() < 10 ? "0" : "") + date.getHours() + ":" + (date.getMinutes() < 10 ? "0" : "") + "" + date.getMinutes();
+        return pad2(date.getDate()) + "/" + pad2(date.getMonth() + 1) + "/" + date.getFullYear() + " " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
     }
 };
 
