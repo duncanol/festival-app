@@ -129,6 +129,10 @@ if (Meteor.isClient) {
         return null;
     };
     
+    Handlebars.registerHelper("mod3", function(index) {
+        return parseInt(index) %3 === 0;
+    });
+    
     Template.chatcontrol.events({
         'click .chat-text-submit': function(e) {
             var textfield = document.getElementById('chat-text');
@@ -171,7 +175,10 @@ if (Meteor.isClient) {
         return doc;
     };
 
-    Template.chathistory.mainTags = [{tag: 'happy'}, {tag: 'sad'}, {tag: 'bored'}];
+    Template.chathistory.mainTagRows = [
+        {mainTags: [{tag: 'happy'}, {tag: 'sad'}, {tag: 'bored'}]}, 
+        {mainTags: [{tag: 'angry'}, {tag: 'excited'}, {tag: 'sexy'}]}
+        ];
     
     var createDateMessageQuery = function(date) {
     	var startOfDay = new Date(date.getTime());
