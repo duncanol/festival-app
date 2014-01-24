@@ -16,7 +16,7 @@ userLoggedIn = function() {
 };
 
 permittedToInsertChat = function(doc) {
-    return userLoggedIn();
+    return true;
 };
 
 permittedToUpdateChat = function(doc) {
@@ -25,6 +25,10 @@ permittedToUpdateChat = function(doc) {
 
 permittedToRemoveChat = function(doc) {
     return adminUserLoggedIn();
+};
+
+permittedToSeeFullChats = function(doc) {
+    return userLoggedIn();
 };
 
 chathistory.allow({
@@ -55,7 +59,7 @@ CalendarFunctions = {
 
 if (Meteor.isClient) {
 
-    var getTagCounts = function() {
+    var getTagCountsByQuery = function(messageQuery) {
         
         // TODO replace with group aggregation function e.g. 
         //db.records.group( {
@@ -65,7 +69,7 @@ if (Meteor.isClient) {
         //   initial: { count: 0 }
         // } )
         
-        var messages = chathistory.find({}).fetch();
+        var messages = chathistory.find(messageQuery).fetch();
         var tagCounts = {};
         
         for (var i = 0; i < messages.length; i++) {
@@ -91,6 +95,10 @@ if (Meteor.isClient) {
         
         Session.set('topTag', numericArray[0]);
         return numericArray;
+    };
+    
+    var getTagCounts = function() {
+        return getTagCountsByQuery({});
     };
     
     getUserName = function(userId) {
@@ -145,6 +153,9 @@ if (Meteor.isClient) {
         return permittedToInsertChat();
     };
     
+    Template.chatcontrol.permittedToSeeFullChats = function() {
+        return permittedToSeeFullChats();
+    };
     
     var transformChat = function(doc) {
         doc.formattedDate = CalendarFunctions.formatDate(doc.date);
@@ -154,12 +165,47 @@ if (Meteor.isClient) {
 
     Template.chathistory.mainTags = [{tag: 'happy'}, {tag: 'sad'}, {tag: 'bored'}];
     
+    var createDateMessageQuery = function(date) {
+    	var startOfDay = new Date(date.getTime());
+    	startOfDay.setHours(0, 0, 0, 0);
+    	var endOfDay = new Date(startOfDay.getTime() + (24 * 60 * 60 * 1000));
+    	
+    	return {
+    		'date': {$gte: startOfDay, $lt: endOfDay}
+    	};
+    };
+    
+    var createTagQuery = function(tag) {
+    	return {"tags.tag": tag};
+    };
+    
+    var merge = function(objects) {
+    	var fullObject = {};
+    	
+    	for (var i = 0; i < objects.length; i++) {
+    		for (var field in objects[i]) {
+        		fullObject[field] = objects[i][field];
+        	}
+    	}
+    	
+    	return fullObject;
+    };
+
+    var getMessagesByDateAndTagQuery = function(date, tag) {
+    	var dateQuery = createDateMessageQuery(new Date());
+    	var tagQuery = createTagQuery(tag);
+    	var fullQuery = merge([dateQuery, tagQuery]);
+    	return fullQuery;
+    };
+    
     Template.chathistory.messages = function(tag) {
-        return chathistory.find({"tags.tag": tag}, {limit: 10, sort: {"date": "desc"}, transform: transformChat});
+    	var query = getMessagesByDateAndTagQuery(new Date(), tag);
+        return chathistory.find(query, {limit: 10, sort: {"date": "desc"}, transform: transformChat});
     };
 
     Template.chathistory.messagesCount = function(tag) {
-        return chathistory.find({"tags.tag": tag}).count();
+    	var query = getMessagesByDateAndTagQuery(new Date(), tag);
+        return chathistory.find(query).count();
     };
 
     Template.chathistory.permittedToRemoveChat = function(id) {

@@ -16,17 +16,19 @@
     </p>
   </div>
   
-  <div class="well span12" style="clear: right;">
-    {{> chatcontrol}}
+  <div class="span12" style="clear: right;">
+    <div class="well">
+      {{> chatcontrol}}
+    </div>
   </div>
   
   <div style="clear: left;">
     {{> chathistory}}
   </div>
   
-  <div style="clear: left;">
+  <div class="span12" style="clear: left;">
     <h4>Emotional leaderboard</h4>
-    <div class="well span12" style="clear: right;">
+    <div class="well" style="clear: right;">
       {{> chatstats}}
     </div>
   </div>
@@ -44,6 +46,10 @@
 
 <template name="chatcontrol">
   
+  {{#unless permittedToSeeFullChats }}
+    <p class="alert alert-info">Please log in (top RHS) to see full messages and authors and unlock other features!</p>
+  {{/unless}}
+  
   {{#if permittedToInsertChat }}
     <input type="text" id="chat-text" placeholder="How ya doing?" />
     <button class="chat-text-submit" data-tag="happy" data-category="emotion">Happy :)</button>
@@ -51,31 +57,30 @@
     <button class="chat-text-submit" data-tag="bored" data-category="emotion">Bored :|</button>
   {{/if}}
   
-  {{#unless permittedToInsertChat }}
-    <p>Please log in (top RHS) to start chatting!</p>
-  {{/unless}}
-  
 </template>
 
 <template name="chathistory">
   
   {{#each mainTags}}
-    <div class="well span4">
-      <h3>{{messagesCount tag}} {{tag}} folk</h3>
-      <ul>
-        {{#each messages tag}}
-          <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
-            {{ text }} <small class="chat-message">({{ authorUsername }} {{formattedDate}})</small>
-            
-            {{#if permittedToRemoveChat _id}} 
-              {{#if deletingEntry ../_id}}
-                <a href="#" id="delete-entry" data-entry-id="{{../_id}}">Delete</a>
+    <div class="span4">
+      <div class="well">
+        <h3>{{messagesCount tag}} {{tag}} folk</h3>
+        <ul>
+          {{#each messages tag}}
+            <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
+              {{ text }} 
+              <small class="chat-message muted">({{ authorUsername }} {{formattedDate}})</small>
+              
+              {{#if permittedToRemoveChat _id}} 
+                {{#if deletingEntry ../_id}}
+                  <a href="#" id="delete-entry" data-entry-id="{{../_id}}">Delete</a>
+                {{/if}}
               {{/if}}
-            {{/if}}
-          </li>
-        {{/each}}
-      </ul>
-    </div>    
+            </li>
+          {{/each}}
+        </ul>
+      </div>    
+    </div>
   {{/each}}
   
 </template>
