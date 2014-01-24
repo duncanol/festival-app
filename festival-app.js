@@ -23,6 +23,22 @@ permittedToUpdateChat = function(doc) {
     return false;
 };
 
+permittedToUpdateChatLikeCountByFields = function(doc, fields) {
+    return fields.length == 1 && fields[0] == 'likeCount' && permittedToUpdateChatLikeCount(doc);
+};
+
+permittedToUpdateChatTextByFields = function(doc, fields) {
+    return adminUserLoggedIn() && fields.length == 1 && fields[0] == 'text' && permittedToUpdateChatText(doc);
+};
+
+permittedToUpdateChatLikeCount = function(doc) {
+    return true;
+};
+
+permittedToUpdateChatText = function(doc) {
+    return adminUserLoggedIn();
+};
+
 permittedToRemoveChat = function(doc) {
     return adminUserLoggedIn();
 };
@@ -36,7 +52,7 @@ chathistory.allow({
         return permittedToInsertChat(doc);
     },
     update: function (userId, doc, fields, modifier) {
-        return permittedToUpdateChat(doc);
+        return permittedToUpdateChatLikeCount(doc, fields) || permittedToUpdateChatText(doc, fields);
     },
     remove: function (userId, doc, fields, modifier) {
         return permittedToRemoveChat(doc);
@@ -232,8 +248,12 @@ if (Meteor.isClient) {
         return permittedToRemoveChat();
     };
     
-    Template.chathistory.permittedToUpdateChat = function(id) {
-        return permittedToUpdateChat();
+    Template.chathistory.permittedToUpdateChatText = function(doc) {
+        return permittedToUpdateChat(doc);
+    };
+    
+    Template.chathistory.permittedToUpdateChatLikeCount= function(doc) {
+        return permittedToUpdateChatLikeCount(doc);
     };
     
     Template.chathistory.deletingEntry = function(entryId) {
@@ -244,10 +264,22 @@ if (Meteor.isClient) {
         'click .chat-message': function(e) {
             var id = e.target.getAttribute("data-entry-id");
             Session.set('deletingEntryId', id);
+            return false;
         },
         'click #delete-entry': function(e) {
             var id = e.target.getAttribute("data-entry-id");
             chathistory.remove({_id: id});
+            return false;
+        },
+        'click .chat-like': function(e) {
+            var id = e.target.getAttribute("data-entry-id");
+            chathistory.update({_id: id}, {$inc: {likeCount: 1}});
+            return false;
+        },
+        'click .chat-no-like': function(e) {
+            var id = e.target.getAttribute("data-entry-id");
+            chathistory.update({_id: id}, {$inc: {likeCount: -1}});
+            return false;
         }
     });
   
