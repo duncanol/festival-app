@@ -172,6 +172,11 @@ if (Meteor.isClient) {
     var transformChat = function(doc) {
         doc.formattedDate = CalendarFunctions.formatDate(doc.date);
         doc.tagByCategory = tagByCategory;
+        if (doc.text.length > 100) {
+            doc.abbreviatedText = doc.text.substring(0, 100) + "...";
+        } else {
+            doc.abbreviatedText = doc.text;
+        }
         return doc;
     };
 

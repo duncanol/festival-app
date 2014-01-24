@@ -92,7 +92,9 @@
             <ul>
               {{#each messages tag}}
                 <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
-                  {{ text }} 
+                
+                  <span title="{{text}}">{{abbreviatedText}}</span>
+                  
                   <small class="chat-message muted">({{ authorUsername }} {{formattedDate}})</small>
                   
                   {{#if permittedToRemoveChat _id}} 
