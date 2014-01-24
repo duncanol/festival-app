@@ -1,5 +1,13 @@
 /* CSS declarations go here */
-li.chat-message:nth-of-type(odd)
-{
+li.chat-message:nth-of-type(odd) {
 	background-color: #DDD;
+}
+
+li.chat-message .full-text {
+	word-break: break-all;
+}
+
+ul.no-bullets {
+	list-style: none;
+	margin: 0;
 }

@@ -115,7 +115,7 @@ function googleTranslateElementInit() {
         <div class="span4">
           <div class="well">
             <h3>{{messagesCount tag}} {{tag}} folk</h3>
-            <ul>
+            <ul class="no-bullets">
               {{#each messages tag}}
               
                 <li class="chat-message" data-entry-id="{{_id}}" style="nth-of-type(even): text-align: right;">
@@ -129,7 +129,7 @@ function googleTranslateElementInit() {
                     ({{this}} likes)
                   {{/with}}
                   
-                  <span title="{{text}}">{{abbreviatedText}}</span>
+                  <span title="{{text}}" class="full-text">{{abbreviatedText}}</span>
                   
                   <small class="chat-message muted">({{ authorUsername }} {{formattedDate}})</small>
                   
@@ -139,6 +139,7 @@ function googleTranslateElementInit() {
                     {{/if}}
                   {{/if}}
                 </li>
+                
               {{/each}}
             </ul>
           </div>    

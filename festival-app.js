@@ -299,7 +299,13 @@ if (Meteor.isClient) {
         return Session.get('topTag');
     };
     
-    var getTagsByQuery = function(messageQuery) {
+    var getTagsByQuery = function(messageQuery, order) {
+        
+        var fullOrder = {transform: transformChat};
+        if (order !== undefined) {
+            fullOrder = merge([fullOrder, order]);   
+        } 
+        
         
         // TODO replace with group aggregation function e.g. 
         //db.records.group( {
@@ -309,14 +315,11 @@ if (Meteor.isClient) {
         //   initial: { count: 0 }
         // } )
         
-        return chathistory.find(messageQuery, {transform: transformChat}).fetch();
+        return chathistory.find(messageQuery, fullOrder).fetch();
     };
         
     Template.toplike.topMessage = function() {
-        var tags = getTagsByQuery(createDateMessageQuery(new Date()));
-        tags.sort(function(tag1, tag2) {
-          return tag2.likeCount - tag1.likeCount;  
-        });
+        var tags = getTagsByQuery(createDateMessageQuery(new Date()), {sort: {"likeCount": "desc"}});
         return tags[0];
     };
 }
