@@ -188,11 +188,15 @@ if (Meteor.isClient) {
     var transformChat = function(doc) {
         doc.formattedDate = CalendarFunctions.formatDate(doc.date);
         doc.tagByCategory = tagByCategory;
-        if (doc.text.length > 100) {
-            doc.abbreviatedText = doc.text.substring(0, 100) + "...";
+        if (doc.text.length > 255) {
+            doc.abbreviatedText = doc.text.substring(0, 255) + "...";
         } else {
             doc.abbreviatedText = doc.text;
         }
+        if (doc.likeCount === undefined) {
+            doc.likeCount = 0;
+        }
+        
         return doc;
     };
 
@@ -293,6 +297,27 @@ if (Meteor.isClient) {
     
     Template.topchat.topTag = function() {
         return Session.get('topTag');
+    };
+    
+    var getTagsByQuery = function(messageQuery) {
+        
+        // TODO replace with group aggregation function e.g. 
+        //db.records.group( {
+        //    key: { a: 1 },
+        //    cond: { a: { $lt: 3 } },
+        //    reduce: function(cur, result) { result.count += cur.count },
+        //   initial: { count: 0 }
+        // } )
+        
+        return chathistory.find(messageQuery, {transform: transformChat}).fetch();
+    };
+        
+    Template.toplike.topMessage = function() {
+        var tags = getTagsByQuery(createDateMessageQuery(new Date()));
+        tags.sort(function(tag1, tag2) {
+          return tag2.likeCount - tag1.likeCount;  
+        });
+        return tags[0];
     };
 }
 

@@ -1,6 +1,14 @@
 <head>
   <title>HappySadBored</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-translate-customization" content="68b8042372323843-043570062e7d10cb-g570656c623cf2a2b-18"></meta>
+  
+  <script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL, autoDisplay: false}, 'google_translate_element');
+}
+</script><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 </head>
 
 <body>
@@ -10,12 +18,22 @@
       {{loginButtons align="right"}}
     </div>
   
+    <div id="google_translate_element"></div>
+
     <div class="row">
       <h1>Happy<i>Sad</i><small>Bored</small></h1>
       
-      <div class="info span12">
+      <div class="span12">
         <p class="alert alert-success">
           {{> topchat}}
+        </p>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="span12">
+        <p class="alert alert-info">
+          {{> toplike}}
         </p>
       </div>
     </div>
@@ -59,6 +77,14 @@
   
   {{#with topTag}}
     The <strong>{{tag}} folk</strong> have it today!
+  {{/with}}
+  
+</template>
+
+<template name="toplike">
+  
+  {{#with topMessage}}
+    Most liked message today with {{likeCount}} likes <span class="divider">//</span> <span title="{{text}}">{{abbreviatedText}}</span>
   {{/with}}
   
 </template>
