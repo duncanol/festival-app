@@ -137,13 +137,21 @@ if (Meteor.isClient) {
             var category = e.target.getAttribute('data-category');
 
             if (text.length > 0) {
-                chathistory.insert({
+                
+                var newMessage = {
                     text: text,
-                    authorId: Meteor.userId(),
-                    authorUsername: Meteor.user().username,
                     date: new Date(),
                     tags: [{tag: tag, category: category}]
-                });
+                };
+                
+                if (userLoggedIn()) {
+                    newMessage.authorId = Meteor.userId();
+                    newMessage.authorUsername = Meteor.user().username;
+                } else {
+                    newMessage.authorUsername = "anon";
+                }
+                
+                chathistory.insert(newMessage);
                 textfield.value = "";
             }
         }
