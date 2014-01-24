@@ -239,8 +239,12 @@ if (Meteor.isClient) {
         }
     });
   
-    Template.chatstats.tags = function() {
+    Template.totalchatstats.tags = function() {
         return getTagCounts();
+    };
+    
+    Template.todaychatstats.tags = function() {
+        return getTagCountsByQuery(createDateMessageQuery(new Date()));
     };
     
     Template.topchat.topTag = function() {

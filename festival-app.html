@@ -1,38 +1,59 @@
 <head>
   <title>HappySadBored</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
 
-  <div style="float: right; margin-right:20px;">
-    {{loginButtons align="right"}}
-  </div>
-  
-  <h1>Happy<i>Sad</i><small>Bored</small></h1>
-  
-  <div class="info span12">
-    <p class="alert alert-success">
-      {{> topchat}}
-    </p>
-  </div>
-  
-  <div class="span12" style="clear: right;">
-    <div class="well">
-      {{> chatcontrol}}
+  <div class="container">
+    <div style="float: right; margin-right:20px;">
+      {{loginButtons align="right"}}
     </div>
-  </div>
   
-  <div style="clear: left;">
-    {{> chathistory}}
-  </div>
-  
-  <div class="span12" style="clear: left;">
-    <h4>Emotional leaderboard</h4>
-    <div class="well" style="clear: right;">
-      {{> chatstats}}
+    <div class="row">
+      <h1>Happy<i>Sad</i><small>Bored</small></h1>
+      
+      <div class="info span12">
+        <p class="alert alert-success">
+          {{> topchat}}
+        </p>
+      </div>
     </div>
-  </div>
     
+    <div class="row">
+      <div class="span12" style="clear: right;">
+        <div class="well">
+          {{> chatcontrol}}
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div style="clear: left;">
+        {{> chathistory}}
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="span12" style="clear: left;">
+        <div class="well" style="clear: right;">
+          <h4>Today</h4>
+          {{> todaychatstats}}
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="span12" style="clear: left;">
+        <div class="well" style="clear: right;">
+          <h4>Overall</h4>
+          {{> totalchatstats}}
+        </div>
+      </div>
+    </div>
+
+  </div>
+      
 </body>
 
 
@@ -85,16 +106,23 @@
   
 </template>
 
-<template name="chatstats">
+<template name="todaychatstats">
 
-  {{#with topTag}}
-    <div class="success">The <strong>{{tag}} folk</strong> have it today!</div>
-  {{/with}}
-  
   {{#each tags}}
-    {{tag}}: {{count}}
-    <span class="divider">//</span>
+    {{> chatstat}}
   {{/each}}  
   
 </template>
 
+<template name="totalchatstats">
+
+  {{#each tags}}
+    {{> chatstat}}
+  {{/each}}  
+  
+</template>
+
+<template name="chatstat">
+  <span class="divider">//</span>
+  {{tag}}: {{count}}
+</template>
